@@ -1,0 +1,69 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="pagination-container" aria-label="Pagination">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.tag %}tag={{ request.GET.tag }}&{% endif %}page=1"
+        aria-label="First page"
+      >
+        <span aria-hidden="true">&laquo;</span>
+        <span class="sr-only">First</span>
+      </a>
+    </li>
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.tag %}tag={{ request.GET.tag }}&{% endif %}page={{ page_obj.previous_page_number }}"
+        aria-label="Previous page"
+      >
+        <span aria-hidden="true">Previous</span>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link" aria-hidden="true">&laquo;</span>
+    </li>
+    <li class="page-item disabled">
+      <span class="page-link" aria-hidden="true">Previous</span>
+    </li>
+    {% endif %}
+
+    <li class="page-item active" aria-current="page">
+      <span class="page-link">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      </span>
+    </li>
+
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.tag %}tag={{ request.GET.tag }}&{% endif %}page={{ page_obj.next_page_number }}"
+        aria-label="Next page"
+      >
+        <span aria-hidden="true">Next</span>
+      </a>
+    </li>
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.tag %}tag={{ request.GET.tag }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+        aria-label="Last page"
+      >
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Last</span>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link" aria-hidden="true">Next</span>
+    </li>
+    <li class="page-item disabled">
+      <span class="page-link" aria-hidden="true">&raquo;</span>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

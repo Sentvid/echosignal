@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% block meta %}{% endblock %}
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>{% block title %}EchoSignal.org{% endblock %}</title>
+
+    <!-- Base CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+
+    <!-- Extra CSS -->
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <!-- Global Header -->
+    <header class="site-header">
+      <div class="header-container">
+        <div class="logo">
+          <a href="/" title="EchoSignal.org">
+            <span class="logo-text">EchoSignal.org</span>
+          </a>
+        </div>
+
+        <nav class="main-nav">
+          <ul class="nav-list">
+            <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+            <li class="nav-item">
+              <a href="/research/" class="nav-link">Research</a>
+            </li>
+            <li class="nav-item">
+              <a href="/about/" class="nav-link">About</a>
+            </li>
+            <li class="nav-item">
+              <a href="/contact/" class="nav-link">Contact</a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="search-box">
+          <form action="/search/" method="get" class="search-form">
+            <input
+              type="text"
+              name="q"
+              placeholder="Search..."
+              class="search-input"
+            />
+            <button type="submit" class="search-button">
+              <span class="sr-only">Search</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+                />
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">{% block content %} {% endblock %}</main>
+
+    <!-- Global Footer -->
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="copyright">
+          &copy; {% now "Y" %} EchoSignal.org. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <!-- Extra JavaScript -->
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

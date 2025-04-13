@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------------------
+# Production Requirements for EchoSignal Project
+# ---------------------------------------------------------------------------
+# IMPORTANT:
+# These versions are pinned for reproducible builds.
+# Use tools like 'pip-compile' (from pip-tools) or 'pip freeze'
+# in a clean virtual environment to generate/update these pinned versions
+# based on your desired compatible ranges (e.g., kept in a separate
+# 'requirements.in' file if using pip-tools).
+#
+# Example command after installing from loose constraints:
+# pip freeze > requirements.txt
+#
+# Or using pip-tools:
+# pip-compile requirements.in > requirements.txt
+# ---------------------------------------------------------------------------
+
+# -- Core Framework --
+django==5.0.0              # UPDATE to the specific latest 5.0.x patch version used
+
+# -- Database Adapter --
+psycopg[binary]==3.1.18      # UPDATE to the specific latest 3.1.x patch version used
+
+# -- WSGI HTTP Server --
+# Used to run the Django application in production (e.g., behind Nginx)
+gunicorn==21.2.0           # Or choose uwsgi. UPDATE to a specific recent version.
+
+# -- Static Files Serving --
+# Simplifies serving static files directly from the application in production
+whitenoise==6.6.0          # UPDATE to a specific recent version. Ensure middleware is configured.
+
+# -- HTTP Requests & Parsing (for URL processing feature) --
+requests==2.31.0           # UPDATE to the specific latest 2.31.x/2.32.x patch version used
+beautifulsoup4==4.12.0     # UPDATE to the specific latest 4.12.x patch version used
+lxml==5.1.0                # UPDATE to the specific latest 5.1.x/5.2.x patch version used
+
+# -- Observability (Optional) --
+# Uncomment if using Prometheus metrics as configured in settings.py
+# prometheus-client==0.19.0  # UPDATE to a specific recent version
+
+# -- Other Production Dependencies --
+# Add any other necessary production libraries here (e.g., celery, django-redis)
+
+# NOTE: python-dotenv has been REMOVED as configuration should come
+#       directly from the environment in production.
