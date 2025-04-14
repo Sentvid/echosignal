@@ -6,16 +6,20 @@ from typing import Dict, Optional, Tuple, Type, Union
 from prometheus_client import Counter
 
 # Django core imports
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.options import ModelAdmin
 from django.db.models import Count, Model, QuerySet
-from django.forms import Form
+from django.forms import Form, forms
 from django.http import HttpRequest
+from django.shortcuts import render, redirect
+from django.urls import path
 from django.utils import timezone
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _ # For potential future i18n
 
 # Local app imports
 from .models import Article, Category, Tag
+from articles.parsers.parser_manager import ParserManager
 
 # --- Constants ---
 STATUS_PUBLISHED: str = 'PUBLISHED' # Use constant for status comparison
@@ -360,3 +364,79 @@ class ArticleAdmin(AdminObservabilityMixin, admin.ModelAdmin):
     #         self.message_user(request, _(f"{updated_count} articles successfully marked as Published."))
     #     else:
     #         self.message_user(request, _("No articles needed updating to Published status."), level=logging.WARNING)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('parse_urls/', self.admin_site.admin_view(self.parse_urls_view), name='parse_urls'),
+        ]
+        return custom_urls + urls
+    
+    def parse_urls_view(self, request: HttpRequest):
+        """Представление для парсинга URL через админ-панель."""
+        if request.method == 'POST':
+            form = ParsingURLForm(request.POST)
+            if form.is_valid():
+                urls = form.cleaned_data['urls'].strip().split('\n')
+                urls = [url.strip() for url in urls if url.strip()]
+                
+                if not urls:
+                    self.message_user(request, "Не указаны URL для парсинга", level=messages.ERROR)
+                    return redirect('admin:parse_urls')
+                
+                # Запускаем парсинг
+                manager = ParserManager()
+                results = manager.parse_multiple_urls(urls)
+                
+                # Формируем сообщение о результатах
+                success_count = sum(1 for article in results.values() if article is not None)
+                self.message_user(
+                    request, 
+                    f"Парсинг завершен. Успешно обработано: {success_count}/{len(urls)}",
+                    level=messages.SUCCESS if success_count == len(urls) else messages.WARNING
+                )
+                
+                # Формируем детальную информацию о результатах
+                for url, article in results.items():
+                    if article:
+                        self.message_user(
+                            request,
+                            format_html('✅ <a href="{}">{}</a> -> <a href="{}">"{}"</a>', 
+                                        url, url,
+                                        f"/admin/articles/article/{article.id}/change/", 
+                                        article.title),
+                            level=messages.SUCCESS
+                        )
+                    else:
+                        self.message_user(
+                            request,
+                            format_html('❌ <a href="{}">{}</a> -> Ошибка парсинга', url, url),
+                            level=messages.ERROR
+                        )
+                
+                return redirect('admin:articles_article_changelist')
+        else:
+            form = ParsingURLForm()
+        
+        context = {
+            'title': 'Парсинг URL',
+            'form': form,
+            'opts': self.model._meta,
+        }
+        return render(request, 'admin/articles/article/parse_urls.html', context)
+    
+    def get_actions(self, request):
+        """Добавляем ссылку на парсинг URL в админке."""
+        actions = super().get_actions(request)
+        actions['parse_urls_action'] = (
+            self.parse_urls_action,
+            'parse_urls_action',
+            'Перейти к парсингу URL'
+        )
+        return actions
+    
+    def parse_urls_action(self, modeladmin, request, queryset):
+        """Действие для перехода к парсингу URL."""
+        return redirect('admin:parse_urls')
+    
+    parse_urls_action.short_description = "Перейти к парсингу URL"

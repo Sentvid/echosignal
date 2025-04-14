@@ -3,6 +3,9 @@ __pycache__/
 *.py[code]
 *$py.class
 
+# Cursor specific
+.cursor/
+
 # C extensions
 *.so
 
